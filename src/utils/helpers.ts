@@ -10,10 +10,7 @@ export async function userSignup(data: {
     // http://localhost:3550
     const response = await axiosInstance.post("/api/auth/signup", data);
 
-    if (!response) {
-      console.error("No response returned from axiosInstance.post");
-      return false;
-    }
+    if (!response) return false;
     return response.data;
   } catch (error: any) {
     console.error(error);
@@ -27,10 +24,7 @@ export async function userSignin(data: { email: string; password: string }) {
   try {
     const response = await axiosInstance.post("/api/auth/signin", data);
 
-    if (!response) {
-      console.error("No response returned from axiosInstance.post");
-      return false;
-    }
+    if (!response) return false;
     return response.data;
   } catch (error: any) {
     console.error(error);

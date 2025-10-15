@@ -26,15 +26,18 @@ export function LoginForm({
   const [formErrors, setFormErrors] = useState<string[]>([]);
   const navigate = useNavigate();
   const { login } = useAuthStore();
+  const [formLoading, setFormLoading] = useState(false);
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormLoading(true);
 
     // await the async signup so errors are caught here and the network request is actually made
     const result = await userSignin({ ...form });
 
     if (result.error && !result.data) {
       toast.error("There was an error with the request");
+      setFormLoading(false);
       return;
     } else if (result.error) {
       if (result.data.details) {
@@ -44,8 +47,10 @@ export function LoginForm({
         setFormErrors(errors);
       }
       toast.error(result.data.message);
+      setFormLoading(false);
       return;
     }
+    setFormLoading(false);
 
     login(result.accessToken, result.user);
     toast.success("You have been logged in successfully");
@@ -105,7 +110,9 @@ export function LoginForm({
                 />
               </Field>
               <Field>
-                <Button type="submit">Sign in</Button>
+                <Button type="submit" disabled={formLoading}>
+                  Sign in
+                </Button>
               </Field>
               <FieldDescription className="text-center">
                 Don&apos;t have an account? <Link to="/signup">Sign up</Link>

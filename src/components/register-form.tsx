@@ -27,12 +27,15 @@ export function RegisterForm({
   });
   const [formErrors, setFormErrors] = useState<string[]>([]);
   const navigate = useNavigate();
+  const [formLoading, setFormLoading] = useState(false);
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormLoading(true);
 
     if (form.confirmPassword !== form.password) {
       toast.error("Passwords do not match");
+      setFormLoading(false);
       return;
     }
     const { confirmPassword, ...submitData } = form;
@@ -41,6 +44,7 @@ export function RegisterForm({
 
     if (result.error && !result.data) {
       toast.error("There was an error with the request");
+      setFormLoading(false);
       return;
     } else if (result.error) {
       const errors = (result.data.details as Array<{ message: string }>).map(
@@ -48,8 +52,10 @@ export function RegisterForm({
       );
       setFormErrors(errors);
       toast.error(result.data.error);
+      setFormLoading(false);
       return;
     }
+    setFormLoading(false);
 
     toast.success("You have been registered. Please sign in");
     navigate("/signin");
@@ -147,7 +153,9 @@ export function RegisterForm({
                 />
               </Field>
               <Field>
-                <Button type="submit">Sign up</Button>
+                <Button type="submit" disabled={formLoading}>
+                  Sign up
+                </Button>
               </Field>
               <FieldDescription className="text-center">
                 Don&apos;t have an account? <Link to="/signin">Sign in</Link>

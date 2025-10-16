@@ -14,6 +14,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { userSignup } from "@/utils/helpers";
 import { useNavigate } from "react-router";
+import { Loader } from "lucide-react";
 
 export function RegisterForm({
   className,
@@ -153,8 +154,15 @@ export function RegisterForm({
                 />
               </Field>
               <Field>
-                <Button type="submit" disabled={formLoading}>
-                  Sign up
+                <Button
+                  type="submit"
+                  disabled={formLoading}
+                  className="flex items-center justify-center gap-1"
+                >
+                  {formLoading && (
+                    <Loader className="mr-2 inline-block animate-spin" />
+                  )}
+                  <span>Sign up</span>
                 </Button>
               </Field>
               <FieldDescription className="text-center">

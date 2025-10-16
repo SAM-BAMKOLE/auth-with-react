@@ -3,7 +3,8 @@ import { useAuthStore } from "@/store/auth";
 
 const baseURL = import.meta.env.PROD
   ? import.meta.env.VITE_SERVER_BASE_URL
-  : "http://localhost:3550";
+  : // : "https://auth-with-express.onrender.com";
+    "http://localhost:3550";
 
 const axiosInstance = axios.create({
   baseURL,

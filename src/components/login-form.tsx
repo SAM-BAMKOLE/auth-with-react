@@ -14,6 +14,7 @@ import { useState } from "react";
 import { userSignin } from "@/utils/helpers";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/auth";
+import { Loader } from "lucide-react";
 
 export function LoginForm({
   className,
@@ -110,8 +111,15 @@ export function LoginForm({
                 />
               </Field>
               <Field>
-                <Button type="submit" disabled={formLoading}>
-                  Sign in
+                <Button
+                  type="submit"
+                  disabled={formLoading}
+                  className="flex items-center justify-center gap-1"
+                >
+                  {formLoading && (
+                    <Loader className="mr-2 inline-block animate-spin" />
+                  )}
+                  <span>Sign in</span>
                 </Button>
               </Field>
               <FieldDescription className="text-center">

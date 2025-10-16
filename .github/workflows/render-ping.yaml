@@ -2,7 +2,7 @@ name: Keep Render App Alive
 
 on:
   schedule:
-    - cron: "*/7 5-24 * * *" # every 7 minutes excluding quiet time 6:00-23:59 UTC
+    - cron: "*/5 5-23 * * *" # every 5 minutes between 05:00–23:59 UTC
   workflow_dispatch:
 
 jobs:
@@ -29,16 +29,16 @@ jobs:
 
           const url = "https://auth-with-react-n6pz.onrender.com/health";
           const now = new Date();
-          const hour = now.getUTCHours() + 1; // adjust if needed
+          const hour = now.getUTCHours();
           const tsFile = ".last-ping";
 
-          // Skip quiet hours
-          if (hour >= 24 || hour < 5) {
-            console.log("⏸️ Skipping ping: quiet hours.");
+          // Skip quiet hours (UTC 00–04 and 23–24)
+          if (hour < 5 || hour >= 23) {
+            console.log("⏸️ Skipping ping: quiet hours (UTC).");
             process.exit(0);
           }
 
-          // Read last ping timestamp if exists
+          // Read last ping timestamp if it exists
           let lastPing = 0;
           if (fs.existsSync(tsFile)) {
             lastPing = parseInt(fs.readFileSync(tsFile, "utf8"), 10) || 0;
@@ -47,15 +47,17 @@ jobs:
           const elapsedMin = (Date.now() - lastPing) / 60000;
           const forcePing = elapsedMin >= 10;
 
-          if (forcePing || Math.random() < 0.6) {
-            console.log(forcePing ? "⏰ Forced ping (>=10 min)" : "🎲 Random ping");
+          // Always ping during active hours (removed random skip)
+          if (forcePing || true) {
+            console.log(forcePing ? "⏰ Forced ping (>=10 min)" : "🔁 Regular ping");
+            console.log("🕒 Current UTC time:", now.toISOString());
+
             const req = https.get(url, (res) => {
               console.log(`✅ Pinged ${url}, status: ${res.statusCode}`);
-
               res.on("data", () => {}); // drain data
               res.on("end", () => {
                 fs.writeFileSync(tsFile, String(Date.now())); // update timestamp
-                console.log("🔚 Response ended cleanly.");
+                console.log("🔚 Response ended cleanly, timestamp saved.");
                 process.exit(0);
               });
             });
@@ -64,9 +66,6 @@ jobs:
               console.error("❌ Error:", err.message);
               process.exit(1);
             });
-          } else {
-            console.log("⏭️ Skipping this run (random delay emulation).");
-            process.exit(0);
           }
           EOF
 
